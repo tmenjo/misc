@@ -1,0 +1,32 @@
+psgrep() { ps -ef | grep -E "^UID|$1" | grep -v grep ; }
+alias psqemu='psgrep /usr/bin/qemu-system-x86_64'
+alias pslibvirtd='psgrep /usr/sbin/libvirtd'
+alias pssheep='psgrep /usr/sbin/sheep'
+alias pszk='psgrep QuorumPeerMain'
+
+upzk() {
+  ZKSERVER="${ZKSERVER:-/usr/share/zookeeper/bin/zkServer.sh}"
+  ZOO_CFG="${ZOO_CFG:-/etc/zookeeper/conf/zoo.cfg}"
+  sudo "$ZKSERVER" start "$ZOO_CFG"
+}
+
+killzk() {
+  ZKSERVER="${ZKSERVER:-/usr/share/zookeeper/bin/zkServer.sh}"
+  ZOO_CFG="${ZOO_CFG:-/etc/zookeeper/conf/zoo.cfg}"
+  sudo "$ZKSERVER" stop "$ZOO_CFG"
+}
+
+dumpzoocfg() {
+  ZOO_CFG="${ZOO_CFG:-/etc/zookeeper/conf/zoo.cfg}"
+  grep -vE '^#|^$' "$ZOO_CFG"
+}
+
+upsheep() {
+  SHEEP="${SHEEP:-/usr/sbin/sheep}"
+  SHEEP_LOG="${SHEEP_LOG:-level=debug}"
+  SHEEP_CLUSTER="${SHEEP_CLUSTER:-zookeeper:127.0.0.1:2181}"
+  SHEEP_PORT="${SHEEP_PORT:-7000}"
+  SHEEP_DATA="${SHEEP_DATA:-/var/lib/sheepdog}"
+  sudo "$SHEEP" -l "$SHEEP_LOG" -p "$SHEEP_PORT" -c "$SHEEP_CLUSTER" \
+    "$SHEEP_DATA"
+}

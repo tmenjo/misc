@@ -30,3 +30,8 @@ upsheep() {
   sudo "$SHEEP" -l "$SHEEP_LOG" -p "$SHEEP_PORT" -c "$SHEEP_CLUSTER" \
     "$SHEEP_DATA"
 }
+
+findgrep-c-ident() {
+  [ -n "$1" ] || return 1
+  find "${2:-.}" \( -name '*.c' -o -name '*.h' \) | xargs -- grep -nRE "\b$1\b"
+}

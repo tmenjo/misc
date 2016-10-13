@@ -1,5 +1,4 @@
-#!/bin/bash
-set -x
+#!/bin/bash -x
 export LANG=C LC_ALL=C
 sudo rm -rf /var/lib/apt/lists/*
 sudo apt-get --quiet clean

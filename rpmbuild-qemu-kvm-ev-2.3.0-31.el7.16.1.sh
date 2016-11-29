@@ -16,20 +16,25 @@ curl -o ~/rpmbuild/SOURCES/"${patch0003##*/}" "${patch0003}"
 curl -o ~/rpmbuild/SOURCES/"${patch0004##*/}" "${patch0004}"
 
 # I know the number of contained patches is 587 :)
-sed -i '/^Patch587:/a Patch588: '"${patch0001##*/}" ~/rpmbuild/SPECS/qemu-kvm.spec
-sed -i '/^Patch588:/a Patch589: '"${patch0002##*/}" ~/rpmbuild/SPECS/qemu-kvm.spec
-sed -i '/^Patch589:/a Patch590: '"${patch0003##*/}" ~/rpmbuild/SPECS/qemu-kvm.spec
-sed -i '/^Patch590:/a Patch591: '"${patch0004##*/}" ~/rpmbuild/SPECS/qemu-kvm.spec
-sed -i '/^%patch587/a %patch588 -p1' ~/rpmbuild/SPECS/qemu-kvm.spec
-sed -i '/^%patch588/a %patch589 -p1' ~/rpmbuild/SPECS/qemu-kvm.spec
-sed -i '/^%patch589/a %patch590 -p1' ~/rpmbuild/SPECS/qemu-kvm.spec
-sed -i '/^%patch590/a %patch591 -p1' ~/rpmbuild/SPECS/qemu-kvm.spec
+sed -i.bak \
+-e 's/^Release: 31%{?dist}.16.1$/Release: 31%{?dist}.16.1_sd/' \
+-e '/^Patch587:/a \
+# For Sheepdog\
+Patch588: '"${patch0001##*/}"'\
+Patch589: '"${patch0002##*/}"'\
+Patch590: '"${patch0003##*/}"'\
+Patch591: '"${patch0004##*/}" \
+-e '/^%patch587/a \
+%patch588 -p1\
+%patch589 -p1\
+%patch590 -p1\
+%patch591 -p1' \
+~/rpmbuild/SPECS/qemu-kvm.spec
 
-perl -i -pe 's/--block-drv-rw-whitelist=(.*?)$/--block-drv-rw-whitelist=sheepdog,${1}/' ~/rpmbuild/SOURCES/build_configure.sh
-perl -i -pe 's/^(Release:.*)$/${1}_sd/' ~/rpmbuild/SPECS/qemu-kvm.spec
+sed -i.bak 's/--block-drv-rw-whitelist=/&sheepdog,/' ~/rpmbuild/SOURCES/build_configure.sh
 
-sudo yum -y groupinstall 'Development tools'
-sudo yum -y install \
+yum -y groupinstall 'Development tools'
+yum -y install \
 	zlib-devel SDL-devel texi2html gnutls-devel cyrus-sasl-devel \
 	libaio-devel pciutils-devel pulseaudio-libs-devel libiscsi-devel \
 	ncurses-devel libattr-devel libusbx-devel usbredir-devel texinfo \

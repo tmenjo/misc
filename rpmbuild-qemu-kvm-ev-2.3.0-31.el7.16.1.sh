@@ -28,15 +28,14 @@ apply_patches='\
 %patch590 -p1\
 %patch591 -p1'
 
-# I know the number of contained patches is 587 :)
 sed -i.bak \
 	-e 's/^Release: 31%{?dist}.16.1$/&_sd/' \
-	-e '/^Patch587:/a '"$define_patches" \
-	-e '/^%patch587/a '"$apply_patches" \
+	-e "/^Patch587:/a $define_patches" \
+	-e "/^%patch587/a $apply_patches" \
 	~/rpmbuild/SPECS/qemu-kvm.spec
 
 sed -i.bak \
-	's/--block-drv-rw-whitelist=/&sheepdog,/' \
+	-e 's/--block-drv-rw-whitelist=/&sheepdog,/' \
 	~/rpmbuild/SOURCES/build_configure.sh
 
 yum -y groupinstall 'Development tools'

@@ -15,23 +15,29 @@ curl -o ~/rpmbuild/SOURCES/"${patch0002##*/}" "${patch0002}"
 curl -o ~/rpmbuild/SOURCES/"${patch0003##*/}" "${patch0003}"
 curl -o ~/rpmbuild/SOURCES/"${patch0004##*/}" "${patch0004}"
 
-# I know the number of contained patches is 587 :)
-sed -i.bak \
--e 's/^Release: 31%{?dist}.16.1$/Release: 31%{?dist}.16.1_sd/' \
--e '/^Patch587:/a \
-# For Sheepdog\
-Patch588: '"${patch0001##*/}"'\
-Patch589: '"${patch0002##*/}"'\
-Patch590: '"${patch0003##*/}"'\
-Patch591: '"${patch0004##*/}" \
--e '/^%patch587/a \
+define_patches="\\
+# For Sheepdog\\
+Patch588: ${patch0001##*/}\\
+Patch589: ${patch0002##*/}\\
+Patch590: ${patch0003##*/}\\
+Patch591: ${patch0004##*/}"
+
+apply_patches='\
 %patch588 -p1\
 %patch589 -p1\
 %patch590 -p1\
-%patch591 -p1' \
-~/rpmbuild/SPECS/qemu-kvm.spec
+%patch591 -p1'
 
-sed -i.bak 's/--block-drv-rw-whitelist=/&sheepdog,/' ~/rpmbuild/SOURCES/build_configure.sh
+# I know the number of contained patches is 587 :)
+sed -i.bak \
+	-e 's/^Release: 31%{?dist}.16.1$/&_sd/' \
+	-e '/^Patch587:/a '"$define_patches" \
+	-e '/^%patch587/a '"$apply_patches" \
+	~/rpmbuild/SPECS/qemu-kvm.spec
+
+sed -i.bak \
+	's/--block-drv-rw-whitelist=/&sheepdog,/' \
+	~/rpmbuild/SOURCES/build_configure.sh
 
 yum -y groupinstall 'Development tools'
 yum -y install \

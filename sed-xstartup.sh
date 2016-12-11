@@ -1,5 +1,6 @@
 #!/bin/bash
 export LANG=C LC_ALL=C
+set -xueo pipefail
 
 vars='\
 export XKL_XMODMAP_DISABLE=1\

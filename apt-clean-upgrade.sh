@@ -1,6 +1,7 @@
-#!/bin/bash -x
+#!/bin/bash
 export LANG=C LC_ALL=C
+set -xueo pipefail
 sudo rm -rf /var/lib/apt/lists/*
-sudo apt-get --quiet clean
-sudo apt-get --quiet update ||: # ignore error
-sudo apt-get --quiet -y upgrade
+sudo apt --quiet clean
+sudo apt --quiet update ||:
+sudo apt --quiet -y upgrade
